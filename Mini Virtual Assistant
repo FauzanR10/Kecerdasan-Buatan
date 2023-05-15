@@ -1,0 +1,100 @@
+import pyttsx3
+import speech_recognition as sr
+import re
+import webbrowser
+import datetime
+
+print("initializing Jarvis")
+
+MASTER = "Sir"
+
+engine = pyttsx3.init("sapi5")
+voices = engine.getProperty("voices")
+engine.setProperty("voice", voices[0].id)
+
+#speak
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+#function
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    
+    if hour >= 0 and hour < 12:
+        speak("Good Morning" + MASTER)
+    elif hour >= 12 and hour < 18:
+        speak("Good Afternoon" + MASTER)
+    else:
+        speak("Good Evening" + MASTER)
+        speak("")
+
+#microphone
+def myCommand():
+    "listening for command"
+    
+    r = sr.Recognizer()
+    
+    with sr.Microphone() as source:
+        print('Speak...')
+        r.pause_threshold = 1
+        r.adjust_for_ambient_noise(source, duration=1)
+        audio = r.listen(source)
+    
+    try:
+        command = r.recognize_google(audio, language="en-us")
+        print('You : ' + command + '\n')
+    
+    except sr.UnknownValueError:
+        print("Say that again please")
+        command = myCommand();
+    
+    return command
+
+#main start here
+wishMe()
+speak("my name is jarvis, how can i help you sir?")
+command = "myCommand()"
+
+def assistant(command):
+    "if statement for executing commands"
+    
+    if 'hello' in command:
+        print("Jarvis : Hello sir, how can i help you?")
+        speak("Hello sir, how can i help you?")
+    
+    elif "where am I" in command:
+        reg_ex = re.search("where (.*)", command)
+        url = "MM3R+CJ8, Jl. Puspitek, Buaran, Kec. Pamulang, Kota Tangerang Selatan, Banten 15310"
+        if reg_ex:
+            subreddit = reg_ex.group(1)
+            url = url + "r/" + subreddit
+        webbrowser.open(url)
+        print("Done!")
+        speak("Google Maps is ready sir")
+    
+    elif "what time is it" in command:
+        strTime = datetime.datetime.now().strftime("%H:%M:%S")
+        print("Time " + strTime)
+        speak("the time is " + strTime)
+    
+    elif "open website" in command:
+        reg_ex = re.search("open website (.+)", command)
+        if reg_ex:
+            domain = reg_ex.group(1)
+            url = "https://www.facebook.com/" + domain
+            webbrowser.open(url)
+            print("Done!")
+            speak("open website have done sir")
+        else:
+            pass
+    
+    elif "thank you" in command:
+        print("Jack : Your welcome sir, happy to help you, have a good day")
+        speak("your welcome sir, happy to help you, have a good day")
+        exit()
+
+#loop to continue executing multiple command
+while True:
+    assistant(myCommand())
+    
