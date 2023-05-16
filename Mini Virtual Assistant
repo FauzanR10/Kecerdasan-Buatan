@@ -90,7 +90,7 @@ def assistant(command):
             pass
     
     elif "thank you" in command:
-        print("Jack : Your welcome sir, happy to help you, have a good day")
+        print("Jarvis : Your welcome sir, happy to help you, have a good day")
         speak("your welcome sir, happy to help you, have a good day")
         exit()
 
